@@ -10,32 +10,19 @@ function Countdown({ onBirthdayReached, birthdayReached }) {
   });
 
   useEffect(() => {
-    // If birthday already reached, don't start the countdown
-    if (birthdayReached) {
+    // 🎂 Rashi Baby's Birthday — Jan 5
+    // Since today IS her birthday, we unlock immediately
+    const targetDate = new Date("2026-01-05T00:00:00");
+
+    const now = new Date();
+
+    if (now >= targetDate) {
+      onBirthdayReached();
       return;
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // 🎂 SET YOUR BIRTHDAY DATE & TIME HERE 🎂
-    // ═══════════════════════════════════════════════════════════════
-
-    const targetDate = new Date("2025-12-18T00:00:00");
-
-    // 📝 HOW TO USE:
-    // Replace the date above with your actual birthday
-    // Format: 'YYYY-MM-DD HH:MM:SS'
-    //
-    // Examples:
-    // - January 15, 2026 at midnight: '2026-01-15T00:00:00'
-    // - June 10, 2025 at 3:30 PM:    '2025-06-10T15:30:00'
-    // - December 25, 2025 at noon:   '2025-12-25T12:00:00'
-    //
-    // ⏰ Time format is 24-hour (00:00 = midnight, 12:00 = noon, 23:59 = 11:59 PM)
-    // ═══════════════════════════════════════════════════════════════
-
     const updateCountdown = () => {
-      const now = new Date();
-      const diff = Math.max(0, targetDate - now);
+      const diff = Math.max(0, targetDate - new Date());
 
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff / (1000 * 60)) % 60);
@@ -43,16 +30,15 @@ function Countdown({ onBirthdayReached, birthdayReached }) {
 
       setTime({ hours, minutes, seconds });
 
-      if (diff <= 0 && !birthdayReached) {
+      if (diff <= 0) {
         onBirthdayReached();
       }
     };
 
     updateCountdown();
     const interval = setInterval(updateCountdown, 1000);
-
     return () => clearInterval(interval);
-  }, [onBirthdayReached, birthdayReached]);
+  }, [onBirthdayReached]);
 
   useEffect(() => {
     setPrevTime(time);
@@ -76,7 +62,7 @@ function Countdown({ onBirthdayReached, birthdayReached }) {
       <section className="countdown">
         <div className="flip-timer">
           <span className="birthday-celebration">
-            🎉 It's Your Birthday! 🎉
+            🎉 It’s Your Birthday, Rashi Baby 🎉
           </span>
         </div>
       </section>
@@ -87,27 +73,9 @@ function Countdown({ onBirthdayReached, birthdayReached }) {
     <section className="countdown">
       <div className="flip-timer">
         <Digit value={time.hours} label="Hours" prevValue={prevTime.hours} />
-        <Digit
-          value={time.minutes}
-          label="Minutes"
-          prevValue={prevTime.minutes}
-        />
-        <Digit
-          value={time.seconds}
-          label="Seconds"
-          prevValue={prevTime.seconds}
-        />
+        <Digit value={time.minutes} label="Minutes" prevValue={prevTime.minutes} />
+        <Digit value={time.seconds} label="Seconds" prevValue={prevTime.seconds} />
       </div>
-
-      {/* ⚠️ TEST BUTTON - delete it from here⚠️ */}
-      <button
-        className="test-button"
-        onClick={onBirthdayReached}
-        title="Skip countdown and see celebration"
-      >
-        🎉 Test Celebration
-      </button>
-      {/* ⚠️ END TEST BUTTON - DELETE UP TO HERE ⚠️ */}
     </section>
   );
 }
