@@ -1,100 +1,57 @@
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import "./MusicPlayer.css";
 
 const MusicPlayer = forwardRef((props, ref) => {
-  const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef(null);
+  const [showPopup, setShowPopup] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  const toggleMusic = () => {
-    const audio = audioRef.current;
-    if (audio) {
-      if (isPlaying) {
-        audio.pause();
-        setIsPlaying(false);
-      } else {
-        audio
-          .play()
-          .then(() => {
-            setIsPlaying(true);
-          })
-          .catch((error) => {
-            console.error("Error playing audio:", error);
-            setIsPlaying(false);
-          });
-      }
-    }
-  };
-
-  // Expose play/pause methods to parent components
   useImperativeHandle(ref, () => ({
-    play: () => {
-      const audio = audioRef.current;
-      if (audio && !isPlaying) {
-        audio
-          .play()
-          .then(() => {
-            setIsPlaying(true);
-          })
-          .catch((error) => {
-            console.error("Error playing audio:", error);
-          });
-      }
-    },
-    pause: () => {
-      const audio = audioRef.current;
-      if (audio && isPlaying) {
-        audio.pause();
-        setIsPlaying(false);
-      }
-    },
-    toggle: () => {
-      toggleMusic();
-    },
+    play: () => handlePlay(),
+    pause: () => handlePause(),
   }));
 
-  useEffect(() => {
-    // Try to autoplay
-    const audio = audioRef.current;
-    if (audio) {
-      // Set volume
-      audio.volume = 0.5;
+  const handlePlay = () => {
+    audioRef.current
+      .play()
+      .then(() => {
+        setIsPlaying(true);
+        setShowPopup(false); // 👈 ONLY hide AFTER click
+      })
+      .catch(() => {
+        // browser blocked — do nothing, popup stays
+      });
+  };
 
-      audio
-        .play()
-        .then(() => {
-          setIsPlaying(true);
-        })
-        .catch((error) => {
-          // Autoplay was prevented
-          console.log("Autoplay prevented:", error);
-          setIsPlaying(false);
-        });
-    }
-  }, []);
+  const handlePause = () => {
+    audioRef.current.pause();
+    setIsPlaying(false);
+  };
 
   return (
     <>
-      <audio ref={audioRef} loop preload="auto">
+      {/* MUSIC FILE */}
+      <audio ref={audioRef} loop>
         <source src="/music.mp3" type="audio/mpeg" />
-        Your browser does not support the audio element.
       </audio>
-      <button
-        className="music-toggle"
-        onClick={toggleMusic}
-        aria-label={isPlaying ? "Pause music" : "Play music"}
-      >
-        {isPlaying ? "⏸ Pause Music" : "🎵 Play Music"}
-      </button>
+
+      {/* POPUP — STAYS UNTIL CLICK */}
+      {showPopup && (
+        <div className="music-popup">
+          <button className="music-btn" onClick={handlePlay}>
+            🎵 Play Music
+          </button>
+        </div>
+      )}
+
+      {/* SMALL TOGGLE AFTER START */}
+      {isPlaying && (
+        <button className="music-toggle" onClick={handlePause}>
+          🔇 Pause
+        </button>
+      )}
     </>
   );
 });
-
-MusicPlayer.displayName = "MusicPlayer";
 
 export default MusicPlayer;
