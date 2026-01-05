@@ -1,37 +1,78 @@
-/* RESET */
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
-  width: 100%;
   height: 100%;
 }
 
-/* IMPORTANT: body must NOT be fixed */
 body {
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-  background: linear-gradient(135deg, #ffd1dc 0%, #ffe6ee 100%);
-  color: #333;
-  text-align: center;
-  scroll-behavior: smooth;
-  overflow-x: hidden;   /* allow vertical layout */
-  overflow-y: auto;
-  animation: fadeIn 600ms ease-out forwards;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: linear-gradient(135deg, #ffd1dc, #ffe6ee);
+  overflow: hidden;
 }
 
-/* React root */
-#root {
-  min-height: 100vh;
+.app {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+/* Pages */
+.page {
   width: 100%;
+  height: 100%;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
 }
 
-/* Fade animation */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Text */
+h1 {
+  font-size: 2.4rem;
+  margin-bottom: 10px;
+}
+
+.highlight {
+  background: linear-gradient(45deg, #e91e63, #ff6b9d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Buttons */
+.celebrate-btn,
+.page-nav-btn {
+  margin-top: 20px;
+  padding: 14px 36px;
+  border-radius: 30px;
+  border: none;
+  background: #e91e63;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: white;
+  border: 2px solid #e91e63;
+  color: #e91e63;
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+/* Final */
+.final-message {
+  font-size: 1.4rem;
+  margin-top: 30px;
+}
+
+.final-subtitle {
+  font-size: 0.9rem;
+  opacity: 0.8;
 }
