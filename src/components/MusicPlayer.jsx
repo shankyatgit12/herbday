@@ -7,49 +7,51 @@ const MusicPlayer = forwardRef((props, ref) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   useImperativeHandle(ref, () => ({
-    play: () => handlePlay(),
-    pause: () => handlePause(),
+    play() {
+      if (audioRef.current) {
+        audioRef.current.play();
+        setIsPlaying(true);
+      }
+    },
+    pause() {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+    },
   }));
 
   const handlePlay = () => {
-    audioRef.current
-      .play()
-      .then(() => {
-        setIsPlaying(true);
-        setShowPopup(false); // 👈 ONLY hide AFTER click
-      })
-      .catch(() => {
-        // browser blocked — do nothing, popup stays
-      });
+    audioRef.current.play();
+    setIsPlaying(true);
+    setShowPopup(false); // 👈 ONLY closes on click
   };
 
-  const handlePause = () => {
-    audioRef.current.pause();
-    setIsPlaying(false);
+  const toggleMusic = () => {
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
   };
 
   return (
     <>
-      {/* MUSIC FILE */}
-      <audio ref={audioRef} loop>
-        <source src="/music.mp3" type="audio/mpeg" />
-      </audio>
+      <audio ref={audioRef} src="/music.mp3" loop />
 
-      {/* POPUP — STAYS UNTIL CLICK */}
       {showPopup && (
         <div className="music-popup">
-          <button className="music-btn" onClick={handlePlay}>
-            🎵 Play Music
-          </button>
+          <button onClick={handlePlay}>🎵 Play Music</button>
         </div>
       )}
 
-      {/* SMALL TOGGLE AFTER START */}
-      {isPlaying && (
-        <button className="music-toggle" onClick={handlePause}>
-          🔇 Pause
-        </button>
-      )}
+      <button className="music-toggle" onClick={toggleMusic}>
+        {isPlaying ? "⏸ Pause Music" : "🎶 Play Music"}
+      </button>
     </>
   );
 });
