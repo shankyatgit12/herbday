@@ -1,52 +1,73 @@
-* {
-  box-sizing: border-box;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-}
-
 .app {
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, #ffd6e8, #ffeef6);
+  background: linear-gradient(135deg, #ffd1dc, #ffe6ee);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Pages */
+.page {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-.card {
-  background: white;
-  padding: 40px;
-  border-radius: 20px;
   text-align: center;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  padding: 20px;
 }
 
+.hidden {
+  display: none;
+}
+
+/* Text */
 h1 {
+  font-size: 2.5rem;
   margin-bottom: 10px;
-  color: #e91e63;
 }
 
-p {
-  color: #555;
-  margin-bottom: 20px;
+.highlight {
+  background: linear-gradient(45deg, #e91e63, #ff6b9d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-button {
+/* Buttons */
+.celebrate-btn,
+.page-nav-btn {
+  margin-top: 20px;
+  padding: 14px 36px;
+  border-radius: 30px;
+  border: none;
   background: #e91e63;
   color: white;
-  border: none;
-  padding: 12px 28px;
-  font-size: 16px;
-  border-radius: 30px;
+  font-size: 1.1rem;
   cursor: pointer;
 }
 
-button:hover {
-  background: #d81b60;
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: white;
+  border: 2px solid #e91e63;
+  color: #e91e63;
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+/* Final */
+.final-message {
+  font-size: 1.4rem;
+  margin-top: 30px;
+}
+
+.final-subtitle {
+  font-size: 0.9rem;
+  opacity: 0.8;
 }
