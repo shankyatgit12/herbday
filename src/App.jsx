@@ -2,6 +2,7 @@ import { gsap } from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { useRef, useState } from "react";
 import "./App.css";
+
 import CelebrationPage from "./components/CelebrationPage";
 import Countdown from "./components/Countdown";
 import Effects from "./components/Effects";
@@ -15,8 +16,8 @@ gsap.registerPlugin(ScrollToPlugin);
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
 
-  // 🎂 Birthday is TODAY — force reached
-  const [birthdayReached, setBirthdayReached] = useState(true);
+  // ✅ IMPORTANT: birthdayReached MUST be false initially
+  const [birthdayReached, setBirthdayReached] = useState(false);
 
   const [showEffects, setShowEffects] = useState(true);
 
@@ -53,7 +54,10 @@ function App() {
       delay: 0.2,
       onComplete: () => {
         setCurrentPage(pageNumber);
-        gsap.set(currentPageRef.current, { x: "0%", visibility: "hidden" });
+        gsap.set(currentPageRef.current, {
+          x: "0%",
+          visibility: "hidden",
+        });
         gsap.to(window, { duration: 0.3, scrollTo: { y: 0 } });
       },
     });
@@ -80,7 +84,14 @@ function App() {
           </p>
         </section>
 
-        <Countdown birthdayReached={true} />
+        {/* ✅ FIXED Countdown (NO crash now) */}
+        <Countdown
+          birthdayReached={birthdayReached}
+          onBirthdayReached={() => {
+            setBirthdayReached(true);
+            goToPage(2);
+          }}
+        />
 
         <section className="teaser">
           <h2 id="teaserHeading">💖 This is just for you 💖</h2>
@@ -98,7 +109,7 @@ function App() {
         </button>
       </div>
 
-      {/* PAGE 2 */}
+      {/* PAGE 2: Celebration */}
       <div
         ref={page2Ref}
         className={`page ${currentPage === 2 ? "active" : ""}`}
@@ -110,7 +121,7 @@ function App() {
         />
       </div>
 
-      {/* PAGE 3 */}
+      {/* PAGE 3: Message */}
       <div
         ref={page3Ref}
         className={`page ${currentPage === 3 ? "active" : ""}`}
@@ -119,13 +130,15 @@ function App() {
         <button className="back-btn" onClick={() => goToPage(2)}>
           ← Back
         </button>
+
         <MessageCard isActive={currentPage === 3} />
+
         <button className="page-nav-btn" onClick={() => goToPage(4)}>
           📸 Our Memories
         </button>
       </div>
 
-      {/* PAGE 4 */}
+      {/* PAGE 4: Gallery */}
       <div
         ref={page4Ref}
         className={`page ${currentPage === 4 ? "active" : ""}`}
@@ -134,7 +147,9 @@ function App() {
         <button className="back-btn" onClick={() => goToPage(3)}>
           ← Back
         </button>
+
         <Gallery isActive={currentPage === 4} />
+
         <section className="final">
           <h2 className="final-message">
             💖 Forever yours, Rashi Baby 💖
@@ -151,4 +166,3 @@ function App() {
 }
 
 export default App;
-
