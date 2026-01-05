@@ -1,6 +1,6 @@
 import { gsap } from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import "./App.css";
 
 import CelebrationPage from "./components/CelebrationPage";
@@ -14,12 +14,9 @@ import MusicPlayer from "./components/MusicPlayer";
 gsap.registerPlugin(ScrollToPlugin);
 
 function App() {
-  const [currentPage, setCurrentPage] = useState(1);
-
-  // ✅ IMPORTANT: birthdayReached MUST be false initially
-  const [birthdayReached, setBirthdayReached] = useState(false);
-
-  const [showEffects, setShowEffects] = useState(true);
+  // ✅ START AT PAGE 0 (IMPORTANT)
+  const [currentPage, setCurrentPage] = useState(0);
+  const [showEffects] = useState(true);
 
   const page1Ref = useRef(null);
   const page2Ref = useRef(null);
@@ -27,38 +24,51 @@ function App() {
   const page4Ref = useRef(null);
   const musicPlayerRef = useRef(null);
 
-  const goToPage = (pageNumber) => {
-    const refs = { 1: page1Ref, 2: page2Ref, 3: page3Ref, 4: page4Ref };
-    const currentPageRef = refs[currentPage];
-    const nextPageRef = refs[pageNumber];
-    const isForward = pageNumber > currentPage;
+  const refs = {
+    0: page1Ref,
+    1: page2Ref,
+    2: page3Ref,
+    3: page4Ref,
+  };
 
-    gsap.to(currentPageRef.current, {
+  // ✅ ENSURE FIRST PAGE IS VISIBLE ON LOAD
+  useEffect(() => {
+    Object.values(refs).forEach((ref, index) => {
+      if (ref.current) {
+        ref.current.style.visibility = index === 0 ? "visible" : "hidden";
+      }
+    });
+  }, []);
+
+  const goToPage = (nextPage) => {
+    if (nextPage === currentPage) return;
+
+    const currentRef = refs[currentPage].current;
+    const nextRef = refs[nextPage].current;
+    const isForward = nextPage > currentPage;
+
+    gsap.to(currentRef, {
       x: isForward ? "-100%" : "100%",
       opacity: 0,
-      duration: 0.6,
+      duration: 0.5,
       ease: "power2.inOut",
     });
 
-    gsap.set(nextPageRef.current, {
+    gsap.set(nextRef, {
       x: isForward ? "100%" : "-100%",
       opacity: 0,
       visibility: "visible",
     });
 
-    gsap.to(nextPageRef.current, {
+    gsap.to(nextRef, {
       x: "0%",
       opacity: 1,
-      duration: 0.6,
+      duration: 0.5,
       ease: "power2.inOut",
-      delay: 0.2,
       onComplete: () => {
-        setCurrentPage(pageNumber);
-        gsap.set(currentPageRef.current, {
-          x: "0%",
-          visibility: "hidden",
-        });
-        gsap.to(window, { duration: 0.3, scrollTo: { y: 0 } });
+        currentRef.style.visibility = "hidden";
+        setCurrentPage(nextPage);
+        gsap.to(window, { scrollTo: 0, duration: 0.2 });
       },
     });
   };
@@ -68,14 +78,10 @@ function App() {
       <MusicPlayer ref={musicPlayerRef} />
       <Hearts />
 
-      {/* PAGE 1: Countdown */}
-      <div
-        ref={page1Ref}
-        className={`page ${currentPage === 1 ? "active" : ""}`}
-        style={{ visibility: currentPage === 1 ? "visible" : "hidden" }}
-      >
+      {/* PAGE 1 */}
+      <div ref={page1Ref} className="page">
         <section className="hero">
-          <h1 id="heroTitle">
+          <h1>
             Happy Birthday <span className="highlight">Rashi Baby</span> 🎂
           </h1>
           <p>
@@ -84,79 +90,43 @@ function App() {
           </p>
         </section>
 
-        {/* ✅ FIXED Countdown (NO crash now) */}
-        <Countdown
-          birthdayReached={birthdayReached}
-          onBirthdayReached={() => {
-            setBirthdayReached(true);
-            goToPage(2);
-          }}
-        />
+        {/* ❌ Countdown NO AUTO NAVIGATION */}
+        <Countdown birthdayReached={true} />
 
         <section className="teaser">
-          <h2 id="teaserHeading">💖 This is just for you 💖</h2>
-          <p className="teaser-hint">
-            A small reminder of how special you are to me ✨
-          </p>
+          <h2>💖 This is just for you 💖</h2>
+          <p>A small reminder of how special you are ✨</p>
         </section>
 
-        <button
-          id="surpriseBtn"
-          className="celebrate-btn"
-          onClick={() => goToPage(2)}
-        >
+        <button className="celebrate-btn" onClick={() => goToPage(1)}>
           🎀 Let’s Celebrate You
         </button>
       </div>
 
-      {/* PAGE 2: Celebration */}
-      <div
-        ref={page2Ref}
-        className={`page ${currentPage === 2 ? "active" : ""}`}
-        style={{ visibility: currentPage === 2 ? "visible" : "hidden" }}
-      >
+      {/* PAGE 2 */}
+      <div ref={page2Ref} className="page">
         <CelebrationPage
-          onComplete={() => goToPage(3)}
+          onComplete={() => goToPage(2)}
           musicPlayerRef={musicPlayerRef}
         />
       </div>
 
-      {/* PAGE 3: Message */}
-      <div
-        ref={page3Ref}
-        className={`page ${currentPage === 3 ? "active" : ""}`}
-        style={{ visibility: currentPage === 3 ? "visible" : "hidden" }}
-      >
-        <button className="back-btn" onClick={() => goToPage(2)}>
-          ← Back
-        </button>
-
-        <MessageCard isActive={currentPage === 3} />
-
-        <button className="page-nav-btn" onClick={() => goToPage(4)}>
+      {/* PAGE 3 */}
+      <div ref={page3Ref} className="page">
+        <button className="back-btn" onClick={() => goToPage(1)}>← Back</button>
+        <MessageCard isActive={currentPage === 2} />
+        <button className="page-nav-btn" onClick={() => goToPage(3)}>
           📸 Our Memories
         </button>
       </div>
 
-      {/* PAGE 4: Gallery */}
-      <div
-        ref={page4Ref}
-        className={`page ${currentPage === 4 ? "active" : ""}`}
-        style={{ visibility: currentPage === 4 ? "visible" : "hidden" }}
-      >
-        <button className="back-btn" onClick={() => goToPage(3)}>
-          ← Back
-        </button>
-
-        <Gallery isActive={currentPage === 4} />
-
+      {/* PAGE 4 */}
+      <div ref={page4Ref} className="page">
+        <button className="back-btn" onClick={() => goToPage(2)}>← Back</button>
+        <Gallery isActive={currentPage === 3} />
         <section className="final">
-          <h2 className="final-message">
-            💖 Forever yours, Rashi Baby 💖
-          </h2>
-          <p className="final-subtitle">
-            Always here, always caring — <strong>Yours, Shashank</strong>
-          </p>
+          <h2>💖 Forever yours, Rashi Baby 💖</h2>
+          <p>Always here — <strong>Shashank</strong></p>
         </section>
       </div>
 
